@@ -1,4 +1,4 @@
-# LLM Council
+# The LLM Council of Sheldons
 
 ![sheldon council](https://github.com/user-attachments/assets/106841f6-734c-4283-8720-33fe99dfb7b5)
 
