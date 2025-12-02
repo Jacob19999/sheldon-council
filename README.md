@@ -44,40 +44,90 @@ Get your API key at [openrouter.ai](https://openrouter.ai/). Make sure to purcha
 
 ### 3. Configure Models (Optional)
 
-Edit `backend/config.py` to customize the council:
+Edit `backend/config.py` to customize the council. The default configuration uses free OpenRouter models:
 
 ```python
 COUNCIL_MODELS = [
-    "openai/gpt-5.1",
-    "google/gemini-3-pro-preview",
-    "anthropic/claude-sonnet-4.5",
-    "x-ai/grok-4",
+    "meta-llama/llama-3.1-8b-instruct",
+    "mistralai/mistral-7b-instruct",
+    "openchat/openchat-3.5-0106",
+    "google/gemma-2-9b-it",
+    "qwen/qwen-2.5-7b-instruct",
 ]
 
-CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
+CHAIRMAN_MODEL = "meta-llama/llama-3.1-8b-instruct"
 ```
+
+You can replace these with any models available on OpenRouter. Check available models at [openrouter.ai/models](https://openrouter.ai/models).
 
 ## Running the Application
 
-**Option 1: Use the start script**
+**Option 1: Use the unified launcher (Recommended)**
+```bash
+python main.py
+```
+
+This starts both backend and frontend servers automatically. The launcher will:
+- Check and free up ports 8001 (backend) and 5173 (frontend) if needed
+- Start both servers in the background
+- Display status messages
+- Clean up processes on Ctrl+C
+
+**Option 2: Run with debug mode**
+```bash
+python main.py --debug
+```
+
+Debug mode enables:
+- **Backend:** Verbose logging, auto-reload on code changes, detailed HTTP request logs
+- **Frontend:** Source maps, enhanced error overlays, debug logging
+- **Output:** All logs visible in console (not captured)
+
+**Option 3: Use the start script**
 ```bash
 ./start.sh
 ```
 
-**Option 2: Run manually**
+**Option 4: Run manually (separate terminals)**
 
 Terminal 1 (Backend):
 ```bash
+# Normal mode
 uv run python -m backend.main
+
+# Debug mode
+DEBUG=true uv run python -m backend.main
 ```
 
 Terminal 2 (Frontend):
 ```bash
 cd frontend
-npm run dev
+npm run dev        # Normal mode
+npm run dev:debug  # Debug mode
 ```
 
 Then open http://localhost:5173 in your browser.
+
+## Debugging
+
+### VS Code Debugger
+
+A VS Code debug configuration is included in `.vscode/launch.json`. Press F5 or use the Run & Debug panel to start the backend with debugging enabled.
+
+### Backend Debugging
+
+The backend includes comprehensive logging that activates in debug mode:
+- Request/response logging for all API endpoints
+- Stage-by-stage progress tracking
+- Error stack traces with full context
+- Auto-reload on Python file changes
+
+### Frontend Debugging
+
+The frontend is configured with:
+- Source maps for debugging compiled code
+- Enhanced error overlays in development
+- React DevTools support
 
 ## Tech Stack
 

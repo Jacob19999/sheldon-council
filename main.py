@@ -7,6 +7,7 @@ import os
 import time
 import shutil
 import socket
+import argparse
 from pathlib import Path
 
 # Global process references for cleanup
@@ -130,11 +131,24 @@ def main():
     """Start both backend and frontend servers."""
     global backend_process, frontend_process
     
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Start LLM Council servers")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug mode (verbose logging, auto-reload, source maps)"
+    )
+    args = parser.parse_args()
+    
+    debug_mode = args.debug
+    
     # Register signal handler for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
     print("Starting LLM Council...")
+    if debug_mode:
+        print("🔍 Debug mode enabled")
     print()
     
     # Check if ports are in use and kill processes if needed
@@ -174,14 +188,30 @@ def main():
     print("Starting backend on http://localhost:8001...")
     backend_cmd = ["uv", "run", "python", "-m", "backend.main"] if use_uv else ["python", "-m", "backend.main"]
     
-    backend_process = subprocess.Popen(
-        backend_cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-        universal_newlines=True
-    )
+    # Set DEBUG environment variable if debug mode is enabled
+    backend_env = os.environ.copy()
+    if debug_mode:
+        backend_env["DEBUG"] = "true"
+    
+    # In debug mode, show output directly; otherwise capture it
+    if debug_mode:
+        backend_process = subprocess.Popen(
+            backend_cmd,
+            env=backend_env,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
+        )
+    else:
+        backend_process = subprocess.Popen(
+            backend_cmd,
+            env=backend_env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
+        )
     
     # Wait a bit for backend to start
     time.sleep(2)
@@ -205,30 +235,43 @@ def main():
     # On Windows, use shell=True to ensure PATH is respected for npm
     use_shell = sys.platform == "win32"
     if use_shell:
-        frontend_cmd = "npm run dev"
+        frontend_cmd = "npm run dev:debug" if debug_mode else "npm run dev"
     else:
         npm_path = shutil.which("npm")
         if not npm_path:
             print("✗ npm not found in PATH!")
             cleanup_processes()
             return
-        frontend_cmd = [npm_path, "run", "dev"]
+        frontend_cmd = [npm_path, "run", "dev:debug" if debug_mode else "dev"]
     
-    frontend_process = subprocess.Popen(
-        frontend_cmd,
-        cwd=frontend_dir,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-        universal_newlines=True,
-        shell=use_shell
-    )
+    # In debug mode, show output directly; otherwise capture it
+    if debug_mode:
+        frontend_process = subprocess.Popen(
+            frontend_cmd,
+            cwd=frontend_dir,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+            shell=use_shell
+        )
+    else:
+        frontend_process = subprocess.Popen(
+            frontend_cmd,
+            cwd=frontend_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+            shell=use_shell
+        )
     
     print()
     print("✓ LLM Council is running!")
     print("  Backend:  http://localhost:8001")
     print("  Frontend: http://localhost:5173")
+    if debug_mode:
+        print("  🔍 Debug mode: Logs visible, auto-reload enabled")
     print()
     print("Press Ctrl+C to stop both servers")
     print()
