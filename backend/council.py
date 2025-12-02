@@ -1,8 +1,28 @@
 """3-stage LLM Council orchestration."""
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
+import asyncio
 from .openrouter import query_models_parallel, query_model
-from .config import COUNCIL_MODELS, CHAIRMAN_MODEL
+from .config import COUNCIL_MODELS, CHAIRMAN_MODEL, COUNCIL_CONTEXT, COUNCIL_SHELDON_NAMES, CHAIRMAN_CONTEXT
+
+
+def get_sheldon_context_for_model(model_index: int) -> Tuple[Optional[str], str]:
+    """
+    Get Sheldon name and context for a model by index.
+    
+    Args:
+        model_index: Index of the model in COUNCIL_MODELS
+        
+    Returns:
+        Tuple of (sheldon_name, context_string)
+    """
+    if model_index >= len(COUNCIL_SHELDON_NAMES):
+        return None, ""
+    
+    sheldon_name = COUNCIL_SHELDON_NAMES[model_index]
+    context = COUNCIL_CONTEXT.get(sheldon_name, "")
+    
+    return sheldon_name, context
 
 
 async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
@@ -15,18 +35,55 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
     Returns:
         List of dicts with 'model' and 'response' keys
     """
-    messages = [{"role": "user", "content": user_query}]
+    # Validate configuration: ensure we have matching counts
+    if len(COUNCIL_MODELS) != len(COUNCIL_SHELDON_NAMES):
+        raise ValueError(
+            f"Mismatch: {len(COUNCIL_MODELS)} models but {len(COUNCIL_SHELDON_NAMES)} Sheldon names. "
+            "Each model must have a corresponding Sheldon personality."
+        )
+    
+    # Build messages with Sheldon context for each model
+    async def query_with_context(model: str, model_index: int) -> Tuple[str, Optional[Dict[str, Any]], Optional[str]]:
+        """Query a single model with its corresponding Sheldon context."""
+        sheldon_name, context = get_sheldon_context_for_model(model_index)
+        
+        # Build messages with context as system message, then user query
+        messages = []
+        if context:
+            messages.append({
+                "role": "system",
+                "content": f"You are {sheldon_name}: {context}\n\nAnswer the following question in character, embodying this Sheldon personality."
+            })
+        messages.append({"role": "user", "content": user_query})
+        
+        response = await query_model(model, messages)
+        return model, response, sheldon_name
 
-    # Query all models in parallel
-    responses = await query_models_parallel(COUNCIL_MODELS, messages)
+    # Query all models in parallel with their individual contexts
+    # This ensures all 5 Sheldons are queried: Science, Texas, Fanboy, Germaphobe, Humorous
+    tasks = [
+        query_with_context(model, idx)
+        for idx, model in enumerate(COUNCIL_MODELS)
+    ]
+    responses_list = await asyncio.gather(*tasks)
 
-    # Format results
+    # Format results with Sheldon names, preserving order
+    # Include all models, even if they failed (so all 5 tabs show in frontend)
     stage1_results = []
-    for model, response in responses.items():
-        if response is not None:  # Only include successful responses
+    for model, response, sheldon_name in responses_list:
+        if response is not None:
+            # Successful response
             stage1_results.append({
                 "model": model,
+                "sheldon_name": sheldon_name,
                 "response": response.get('content', '')
+            })
+        else:
+            # Failed response - include with error message so tab still shows
+            stage1_results.append({
+                "model": model,
+                "sheldon_name": sheldon_name,
+                "response": f"*Error: {sheldon_name or model} failed to respond. Please try again.*"
             })
 
     return stage1_results
@@ -55,22 +112,36 @@ async def stage2_collect_rankings(
         for label, result in zip(labels, stage1_results)
     }
 
-    # Build the ranking prompt
-    responses_text = "\n\n".join([
-        f"Response {label}:\n{result['response']}"
-        for label, result in zip(labels, stage1_results)
-    ])
+    # Build the ranking prompt with Sheldon context for each response
+    responses_text_parts = []
+    for label, result in zip(labels, stage1_results):
+        sheldon_name = result.get('sheldon_name', 'Unknown')
+        response_content = result['response']
+        responses_text_parts.append(
+            f"Response {label} (from {sheldon_name}):\n{response_content}"
+        )
+    responses_text = "\n\n".join(responses_text_parts)
 
-    ranking_prompt = f"""You are evaluating different responses to the following question:
+    # Build ranking prompts with Sheldon context for each model
+    async def query_ranking_with_context(model: str, model_index: int) -> Tuple[str, Optional[Dict[str, Any]], Optional[str]]:
+        """Query a model for ranking with its corresponding Sheldon context."""
+        sheldon_name, context = get_sheldon_context_for_model(model_index)
+        
+        ranking_prompt = f"""
+You are {sheldon_name} from Sheldon Cooper's Council of Sheldons.
+
+{context}
+
+You are evaluating different responses to the following question:
 
 Question: {user_query}
 
-Here are the responses from different models (anonymized):
+Here are the responses from different models (each labeled with their Sheldon personality):
 
 {responses_text}
 
 Your task:
-1. First, evaluate each response individually. For each response, explain what it does well and what it does poorly.
+1. First, evaluate each response individually from your {sheldon_name} perspective.
 2. Then, at the very end of your response, provide a final ranking.
 
 IMPORTANT: Your final ranking MUST be formatted EXACTLY as follows:
@@ -90,23 +161,41 @@ FINAL RANKING:
 2. Response A
 3. Response B
 
-Now provide your evaluation and ranking:"""
+Now provide your evaluation and ranking from your {sheldon_name} perspective:
 
-    messages = [{"role": "user", "content": ranking_prompt}]
+"""
+        messages = [{"role": "user", "content": ranking_prompt}]
+        response = await query_model(model, messages)
+        return model, response, sheldon_name
 
-    # Get rankings from all council models in parallel
-    responses = await query_models_parallel(COUNCIL_MODELS, messages)
+    # Query all models for rankings in parallel with their individual contexts
+    ranking_tasks = [
+        query_ranking_with_context(model, idx)
+        for idx, model in enumerate(COUNCIL_MODELS)
+    ]
+    ranking_responses = await asyncio.gather(*ranking_tasks)
 
-    # Format results
+    # Format results with Sheldon names, including all models even if they failed
     stage2_results = []
-    for model, response in responses.items():
+    for model, response, sheldon_name in ranking_responses:
+        
         if response is not None:
+            # Successful response
             full_text = response.get('content', '')
             parsed = parse_ranking_from_text(full_text)
             stage2_results.append({
                 "model": model,
+                "sheldon_name": sheldon_name,
                 "ranking": full_text,
                 "parsed_ranking": parsed
+            })
+        else:
+            # Failed response - include with error message so tab still shows
+            stage2_results.append({
+                "model": model,
+                "sheldon_name": sheldon_name,
+                "ranking": f"*Error: {sheldon_name or model} failed to provide a ranking. Please try again.*",
+                "parsed_ranking": []
             })
 
     return stage2_results, label_to_model
@@ -139,7 +228,7 @@ async def stage3_synthesize_final(
         for result in stage2_results
     ])
 
-    chairman_prompt = f"""You are the Chairman of an LLM Council. Multiple AI models have provided responses to a user's question, and then ranked each other's responses.
+    chairman_prompt = f"""
 
 Original Question: {user_query}
 
@@ -149,12 +238,8 @@ STAGE 1 - Individual Responses:
 STAGE 2 - Peer Rankings:
 {stage2_text}
 
-Your task as Chairman is to synthesize all of this information into a single, comprehensive, accurate answer to the user's original question. Consider:
-- The individual responses and their insights
-- The peer rankings and what they reveal about response quality
-- Any patterns of agreement or disagreement
-
-Provide a clear, well-reasoned final answer that represents the council's collective wisdom:"""
+Context: {CHAIRMAN_CONTEXT}
+"""
 
     messages = [{"role": "user", "content": chairman_prompt}]
 
@@ -274,8 +359,8 @@ Title:"""
 
     messages = [{"role": "user", "content": title_prompt}]
 
-    # Use gemini-2.5-flash for title generation (fast and cheap)
-    response = await query_model("google/gemini-2.5-flash", messages, timeout=30.0)
+    # Use nvidia/nemotron-nano-12b-v2-vl for title generation (fast and cheap)
+    response = await query_model("nvidia/nemotron-nano-12b-v2-vl:free", messages, timeout=30.0)
 
     if response is None:
         # Fallback to a generic title

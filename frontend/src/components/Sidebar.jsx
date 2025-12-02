@@ -6,6 +6,8 @@ export default function Sidebar({
   currentConversationId,
   onSelectConversation,
   onNewConversation,
+  onDeleteConversation,
+  onDeleteAllConversations,
 }) {
   return (
     <div className="sidebar">
@@ -17,6 +19,17 @@ export default function Sidebar({
       </div>
 
       <div className="conversation-list">
+        {conversations.length > 0 && (
+          <div className="conversation-list-header">
+            <button
+              className="delete-all-btn"
+              onClick={onDeleteAllConversations}
+              title="Delete all conversations"
+            >
+              Delete All
+            </button>
+          </div>
+        )}
         {conversations.length === 0 ? (
           <div className="no-conversations">No conversations yet</div>
         ) : (
@@ -28,12 +41,21 @@ export default function Sidebar({
               }`}
               onClick={() => onSelectConversation(conv.id)}
             >
-              <div className="conversation-title">
-                {conv.title || 'New Conversation'}
+              <div className="conversation-content">
+                <div className="conversation-title">
+                  {conv.title || 'New Conversation'}
+                </div>
+                <div className="conversation-meta">
+                  {conv.message_count} messages
+                </div>
               </div>
-              <div className="conversation-meta">
-                {conv.message_count} messages
-              </div>
+              <button
+                className="delete-conversation-btn"
+                onClick={(e) => onDeleteConversation(conv.id, e)}
+                title="Delete conversation"
+              >
+                ×
+              </button>
             </div>
           ))
         )}

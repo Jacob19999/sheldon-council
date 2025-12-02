@@ -147,6 +147,23 @@ async def send_message(conversation_id: str, request: SendMessageRequest):
     }
 
 
+@app.delete("/api/conversations/{conversation_id}")
+async def delete_conversation(conversation_id: str):
+    """Delete a specific conversation."""
+    conversation = storage.get_conversation(conversation_id)
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    storage.delete_conversation(conversation_id)
+    return {"status": "deleted"}
+
+
+@app.delete("/api/conversations")
+async def delete_all_conversations():
+    """Delete all conversations."""
+    storage.delete_all_conversations()
+    return {"status": "deleted", "count": "all"}
+
+
 @app.post("/api/conversations/{conversation_id}/message/stream")
 async def send_message_stream(conversation_id: str, request: SendMessageRequest):
     """

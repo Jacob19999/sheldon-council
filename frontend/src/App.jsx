@@ -57,6 +57,39 @@ function App() {
     setCurrentConversationId(id);
   };
 
+  const handleDeleteConversation = async (id, e) => {
+    e.stopPropagation(); // Prevent selecting conversation when clicking delete
+    if (!window.confirm('Are you sure you want to delete this conversation?')) {
+      return;
+    }
+    try {
+      await api.deleteConversation(id);
+      setConversations(conversations.filter((conv) => conv.id !== id));
+      if (currentConversationId === id) {
+        setCurrentConversationId(null);
+        setCurrentConversation(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
+      alert('Failed to delete conversation');
+    }
+  };
+
+  const handleDeleteAllConversations = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL conversations? This cannot be undone.')) {
+      return;
+    }
+    try {
+      await api.deleteAllConversations();
+      setConversations([]);
+      setCurrentConversationId(null);
+      setCurrentConversation(null);
+    } catch (error) {
+      console.error('Failed to delete all conversations:', error);
+      alert('Failed to delete all conversations');
+    }
+  };
+
   const handleSendMessage = async (content) => {
     if (!currentConversationId) return;
 
@@ -188,6 +221,8 @@ function App() {
         currentConversationId={currentConversationId}
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
+        onDeleteConversation={handleDeleteConversation}
+        onDeleteAllConversations={handleDeleteAllConversations}
       />
       <ChatInterface
         conversation={currentConversation}
