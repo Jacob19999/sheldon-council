@@ -6,6 +6,11 @@ The idea of this repo is that instead of asking a question to your favorite LLM 
 
 This repo is a simple, local web app that essentially looks like ChatGPT except it uses OpenRouter to send your query to multiple LLMs each with a different Sheldon Personality, it then asks them to review and rank each other's work, and finally the Chairman Sheldon LLM produces the final response.
 
+Demo: 
+<img width="2964" height="1372" alt="image" src="https://github.com/user-attachments/assets/343d9a4a-4819-4f1f-afdb-a054105ea977" />
+<img width="2962" height="1604" alt="image" src="https://github.com/user-attachments/assets/3fd9c5c0-946c-4425-8099-6253930c89c7" />
+
+
 ### Chairman Sheldon: The Authoritative Orchestrator
 
 As the presiding figure, Chairman Sheldon embodies the hyper-organized, protocol-obsessed core of Sheldon's identity – the "default" Sheldon who thrives on structure and hierarchy. Visually, he's the central, gavel-wielding authority in a judge's robe or suit (evoking a Supreme Court parody), seated at the head of the table like a diminutive Robert's Rules of Order enforcer. His personality is a blend of bureaucratic precision and subtle insecurity; he's the diplomat who maintains order but reveals cracks when confronted with chaos (like the Laid-Back interloper).
