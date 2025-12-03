@@ -81,17 +81,28 @@ Edit `backend/config.py` to customize the council. The default configuration use
 
 ```python
 COUNCIL_MODELS = [
-    "meta-llama/llama-3.1-8b-instruct",
-    "mistralai/mistral-7b-instruct",
-    "openchat/openchat-3.5-0106",
-    "google/gemma-2-9b-it",
-    "qwen/qwen-2.5-7b-instruct",
+    "tngtech/deepseek-r1t2-chimera:free",
+    "x-ai/grok-4.1-fast:free",
+    "nvidia/nemotron-nano-12b-v2-vl:free",
+    "tngtech/deepseek-r1t-chimera:free",
+    "openai/gpt-oss-20b:free",
+    "nvidia/nemotron-nano-9b-v2:free"
 ]
 
-CHAIRMAN_MODEL = "meta-llama/llama-3.1-8b-instruct"
+CHAIRMAN_MODEL = "google/gemini-2.5-flash"
 ```
 
+**Current Council Members (6 Sheldons):**
+- **Science Sheldon** - Empirical purist, terse and evidence-driven
+- **Texas Sheldon** - Folksy maverick with Southern bravado
+- **Fanboy Sheldon** - Geek enthusiast obsessed with pop culture
+- **Germaphobe Sheldon** - Anxious hypochondriac fixated on hygiene
+- **Humorous Sheldon** - Self-deprecating jester with puns and pranks
+- **Laid-Back Sheldon** - Chill rebel against routines
+
 You can replace these with any models available on OpenRouter. Check available models at [openrouter.ai/models](https://openrouter.ai/models).
+
+**Important:** The number of models in `COUNCIL_MODELS` must match the number of names in `COUNCIL_SHELDON_NAMES` (currently 6).
 
 ## Running the Application
 
@@ -170,6 +181,95 @@ The frontend is configured with:
 - Source maps for debugging compiled code
 - Enhanced error overlays in development
 - React DevTools support
+
+## Project Structure
+
+```
+sheldon-council/
+├── backend/                 # FastAPI backend
+│   ├── __init__.py
+│   ├── config.py           # Model configuration and system prompts
+│   ├── council.py          # 3-stage deliberation logic
+│   ├── main.py             # FastAPI app and endpoints
+│   ├── openrouter.py       # OpenRouter API client
+│   └── storage.py          # Conversation persistence
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/     # React components
+│   │   │   ├── ChatInterface.jsx
+│   │   │   ├── Stage1.jsx  # Individual model responses
+│   │   │   ├── Stage2.jsx  # Peer evaluations and rankings
+│   │   │   ├── Stage3.jsx  # Final synthesized answer
+│   │   │   ├── Sidebar.jsx
+│   │   │   └── ProgressBar.jsx
+│   │   ├── api.js          # API client
+│   │   ├── App.jsx         # Main app component
+│   │   └── main.jsx
+│   └── package.json
+├── data/
+│   └── conversations/      # JSON conversation storage
+├── main.py                 # Unified launcher script
+├── pyproject.toml          # Python dependencies (uv)
+└── README.md
+```
+
+## Modifying System Prompts
+
+The system prompts that define each Sheldon's personality are located in `backend/config.py`. There are two main prompt dictionaries:
+
+### Council Member Prompts (`COUNCIL_CONTEXT`)
+
+Each council member has a detailed personality prompt in the `COUNCIL_CONTEXT` dictionary:
+
+```python
+COUNCIL_CONTEXT = {
+    "Science Sheldon": """You are Science Sheldon, the empirical purist...""",
+    "Texas Sheldon": """You are Texas Sheldon, the boot-stompin'...""",
+    # ... etc
+}
+```
+
+To modify a Sheldon's personality:
+1. Open `backend/config.py`
+2. Find the corresponding entry in `COUNCIL_CONTEXT`
+3. Edit the prompt string to change behavior, tone, or characteristics
+4. Restart the backend server
+
+**Example:** To make Science Sheldon more verbose, edit:
+```python
+"Science Sheldon": """You are Science Sheldon... Your responses are terse..."""
+```
+Change to:
+```python
+"Science Sheldon": """You are Science Sheldon... Your responses are detailed and comprehensive..."""
+```
+
+### Chairman Prompt (`SHELDON_CONTEXT`)
+
+The Chairman's prompt is stored in `SHELDON_CONTEXT` (a long-form string). This defines how the final synthesis is performed. To modify:
+1. Open `backend/config.py`
+2. Find the `SHELDON_CONTEXT` variable (starts around line 50)
+3. Edit the prompt, particularly the final paragraph that instructs how to respond
+4. Restart the backend server
+
+**Note:** The Chairman prompt includes extensive background on Sheldon's character, history, and relationships. The key instruction is at the end (around line 70), which tells the model how to synthesize responses.
+
+### Stage 2 Ranking Prompt
+
+The ranking prompt used in Stage 2 is built dynamically in `backend/council.py` (around line 144). To modify how models evaluate each other:
+1. Open `backend/council.py`
+2. Find the `stage2_collect_rankings()` function
+3. Locate the `ranking_prompt` variable
+4. Adjust the evaluation criteria or format requirements
+5. Restart the backend server
+
+### Stage 3 Synthesis Prompt
+
+The Chairman's synthesis prompt is also in `backend/council.py` (around line 249 in `stage3_synthesize_final()`). To change how the final answer is synthesized:
+1. Open `backend/council.py`
+2. Find the `chairman_prompt` variable in `stage3_synthesize_final()`
+3. Modify the instructions for synthesis
+4. Restart the backend server
 
 ## Tech Stack
 
