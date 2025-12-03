@@ -2,6 +2,9 @@
 
 ![sheldon council](https://github.com/user-attachments/assets/106841f6-734c-4283-8720-33fe99dfb7b5)
 
+> **Fork of [karpathy/llm-council](https://github.com/karpathy/llm-council) — The Big Bang Theory Edition**  
+> This fork adds Sheldon Cooper personalities from *The Big Bang Theory* to the original LLM Council concept. Each council member embodies a different Sheldon persona (Science, Texas, Fanboy, Germaphobe, Humorous, and Laid-Back), making the deliberation process more entertaining while maintaining the core 3-stage system. All credit to [@karpathy](https://github.com/karpathy) for the original concept.
+
 The idea of this repo is that instead of asking a question to your favorite LLM provider (e.g. OpenAI GPT 5.1, Google Gemini 3.0 Pro, xAI Grok 4, eg.c), you can group them into your "Sheldon LLM Council" inspired by The Big Bang Theory TV show.
 
 This repo is a simple, local web app that essentially looks like ChatGPT except it uses OpenRouter to send your query to multiple LLMs each with a different Sheldon Personality, it then asks them to review and rank each other's work, and finally the Chairman Sheldon LLM produces the final response.
