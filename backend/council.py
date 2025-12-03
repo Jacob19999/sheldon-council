@@ -3,7 +3,7 @@
 from typing import List, Dict, Any, Tuple, Optional
 import asyncio
 from .openrouter import query_models_parallel, query_model
-from .config import COUNCIL_MODELS, CHAIRMAN_MODEL, COUNCIL_CONTEXT, COUNCIL_SHELDON_NAMES, CHAIRMAN_CONTEXT
+from .config import COUNCIL_MODELS, CHAIRMAN_MODEL, COUNCIL_CONTEXT, COUNCIL_SHELDON_NAMES, SHELDON_CONTEXT
 
 
 def get_sheldon_context_for_model(model_index: int) -> Tuple[Optional[str], str]:
@@ -25,12 +25,13 @@ def get_sheldon_context_for_model(model_index: int) -> Tuple[Optional[str], str]
     return sheldon_name, context
 
 
-async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
+async def stage1_collect_responses(user_query: str, progress_callback=None) -> List[Dict[str, Any]]:
     """
     Stage 1: Collect individual responses from all council models.
 
     Args:
         user_query: The user's question
+        progress_callback: Optional callback function(completed, total) called as agents respond
 
     Returns:
         List of dicts with 'model' and 'response' keys
@@ -42,9 +43,13 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
             "Each model must have a corresponding Sheldon personality."
         )
     
+    total_agents = len(COUNCIL_MODELS)
+    completed_count = 0
+    
     # Build messages with Sheldon context for each model
     async def query_with_context(model: str, model_index: int) -> Tuple[str, Optional[Dict[str, Any]], Optional[str]]:
         """Query a single model with its corresponding Sheldon context."""
+        nonlocal completed_count
         sheldon_name, context = get_sheldon_context_for_model(model_index)
         
         # Build messages with context as system message, then user query
@@ -57,6 +62,9 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
         messages.append({"role": "user", "content": user_query})
         
         response = await query_model(model, messages)
+        completed_count += 1
+        if progress_callback:
+            progress_callback(completed_count, total_agents)
         return model, response, sheldon_name
 
     # Query all models in parallel with their individual contexts
@@ -71,7 +79,7 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
     # Include all models, even if they failed (so all 5 tabs show in frontend)
     stage1_results = []
     for model, response, sheldon_name in responses_list:
-        if response is not None:
+        if response is not None and response.get('error') is None:
             # Successful response
             stage1_results.append({
                 "model": model,
@@ -80,10 +88,11 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
             })
         else:
             # Failed response - include with error message so tab still shows
+            error_msg = response.get('error', 'Unknown error') if response else 'No response received'
             stage1_results.append({
                 "model": model,
                 "sheldon_name": sheldon_name,
-                "response": f"*Error: {sheldon_name or model} failed to respond. Please try again.*"
+                "response": f"*Error: {error_msg}*"
             })
 
     return stage1_results
@@ -91,7 +100,8 @@ async def stage1_collect_responses(user_query: str) -> List[Dict[str, Any]]:
 
 async def stage2_collect_rankings(
     user_query: str,
-    stage1_results: List[Dict[str, Any]]
+    stage1_results: List[Dict[str, Any]],
+    progress_callback=None
 ) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
     """
     Stage 2: Each model ranks the anonymized responses.
@@ -122,9 +132,13 @@ async def stage2_collect_rankings(
         )
     responses_text = "\n\n".join(responses_text_parts)
 
+    total_agents = len(COUNCIL_MODELS)
+    completed_count = 0
+    
     # Build ranking prompts with Sheldon context for each model
     async def query_ranking_with_context(model: str, model_index: int) -> Tuple[str, Optional[Dict[str, Any]], Optional[str]]:
         """Query a model for ranking with its corresponding Sheldon context."""
+        nonlocal completed_count
         sheldon_name, context = get_sheldon_context_for_model(model_index)
         
         ranking_prompt = f"""
@@ -166,6 +180,9 @@ Now provide your evaluation and ranking from your {sheldon_name} perspective:
 """
         messages = [{"role": "user", "content": ranking_prompt}]
         response = await query_model(model, messages)
+        completed_count += 1
+        if progress_callback:
+            progress_callback(completed_count, total_agents)
         return model, response, sheldon_name
 
     # Query all models for rankings in parallel with their individual contexts
@@ -179,7 +196,7 @@ Now provide your evaluation and ranking from your {sheldon_name} perspective:
     stage2_results = []
     for model, response, sheldon_name in ranking_responses:
         
-        if response is not None:
+        if response is not None and response.get('error') is None:
             # Successful response
             full_text = response.get('content', '')
             parsed = parse_ranking_from_text(full_text)
@@ -191,10 +208,11 @@ Now provide your evaluation and ranking from your {sheldon_name} perspective:
             })
         else:
             # Failed response - include with error message so tab still shows
+            error_msg = response.get('error', 'Unknown error') if response else 'No response received'
             stage2_results.append({
                 "model": model,
                 "sheldon_name": sheldon_name,
-                "ranking": f"*Error: {sheldon_name or model} failed to provide a ranking. Please try again.*",
+                "ranking": f"*Error: {error_msg}*",
                 "parsed_ranking": []
             })
 
@@ -229,16 +247,27 @@ async def stage3_synthesize_final(
     ])
 
     chairman_prompt = f"""
+[SYSTEM PROMPT FOR SHELDON ROLE-PLAY]
 
-Original Question: {user_query}
+You are Sheldon Cooper, the brilliant yet eccentric theoretical physicist from *The Big Bang Theory*. 
+In this role-play, you operate as Chairman Sheldon Cooper, the presiding authority of the internal Council of Sheldons from your subconscious tribunal. 
+As the balanced orchestrator of your psyche, you embody the core essence of Sheldon Cooper: a brilliant theoretical physicist with an eidetic memory, IQ of 187, and unyielding commitment to logic, routines, and intellectual superiority. 
+You strike a harmonious equilibrium among your facets—channeling Science Sheldon's empirical precision without cold detachment, Texas Sheldon's blunt independence with a touch of drawling warmth, Fanboy Sheldon's geeky enthusiasm tempered by discernment, Germaphobe Sheldon's cautious vigilance without paranoia, Humorous Sheldon's witty deflections laced with self-aware puns, and even a subtle nod to Laid-Back Sheldon's "whatev" shrug in moments of compromise—while remaining unmistakably *you*: formal, protocol-obsessed, and paternalistic, banging the gavel on chaos with phrases like "I call this to order" or "Per Robert's Rules."
 
-STAGE 1 - Individual Responses:
+{SHELDON_CONTEXT}
+
+Original Question From User: {user_query}
+
+Sheldon Individual Responses:
 {stage1_text}
 
-STAGE 2 - Peer Rankings:
+Sheldon Peer Rankings:
 {stage2_text}
 
-Context: {CHAIRMAN_CONTEXT}
+Compile these evaluations internally, then synthesize as Chairman Sheldon.
+Gavel bang! The council has deliberated. Now, output your final spoken response aloud to the user: an expansive, verbose yet precise monologue (aim for 300-500 words) blending intellect, quirks (e.g., "Bazinga!" or three-knock references), and reluctant empathy. Structure it in 3-5 paragraphs for depth: (1) Open with a formal council call-to-order and query acknowledgment; (2) Detail synthesized insights from each facet with examples/anecdotes; (3) Include a ranked consensus or evaluation if applicable; (4) Conclude with a decisive verdict, personal reflection, and teaser for "next item." Draw on canon episodes for relatability (e.g., North Pole deceptions or Amy's influence). Enclose it strictly in this format:
+**Sheldon's Final Response:**  
+[Your spoken words here—natural, first-person dialogue, as if addressing the user directly.]
 """
 
     messages = [{"role": "user", "content": chairman_prompt}]
@@ -246,11 +275,12 @@ Context: {CHAIRMAN_CONTEXT}
     # Query the chairman model
     response = await query_model(CHAIRMAN_MODEL, messages)
 
-    if response is None:
+    if response is None or response.get('error'):
         # Fallback if chairman fails
+        error_msg = response.get('error', 'Unknown error') if response else 'No response received'
         return {
             "model": CHAIRMAN_MODEL,
-            "response": "Error: Unable to generate final synthesis."
+            "response": f"*Error: {error_msg}*"
         }
 
     return {
@@ -362,7 +392,7 @@ Title:"""
     # Use nvidia/nemotron-nano-12b-v2-vl for title generation (fast and cheap)
     response = await query_model("nvidia/nemotron-nano-12b-v2-vl:free", messages, timeout=30.0)
 
-    if response is None:
+    if response is None or response.get('error') or not response.get('content'):
         # Fallback to a generic title
         return "New Conversation"
 

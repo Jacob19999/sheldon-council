@@ -114,6 +114,11 @@ function App() {
           stage2: false,
           stage3: false,
         },
+        progress: {
+          stage1: { completed: 0, total: 0 },
+          stage2: { completed: 0, total: 0 },
+          stage3: { completed: 0, total: 1 },
+        },
       };
 
       // Add the partial assistant message
@@ -130,6 +135,19 @@ function App() {
               const messages = [...prev.messages];
               const lastMsg = messages[messages.length - 1];
               lastMsg.loading.stage1 = true;
+              lastMsg.progress.stage1 = { completed: 0, total: 0 };
+              return { ...prev, messages };
+            });
+            break;
+
+          case 'stage1_progress':
+            setCurrentConversation((prev) => {
+              const messages = [...prev.messages];
+              const lastMsg = messages[messages.length - 1];
+              lastMsg.progress.stage1 = {
+                completed: event.completed,
+                total: event.total,
+              };
               return { ...prev, messages };
             });
             break;
@@ -140,6 +158,13 @@ function App() {
               const lastMsg = messages[messages.length - 1];
               lastMsg.stage1 = event.data;
               lastMsg.loading.stage1 = false;
+              // Set final progress
+              if (event.data && Array.isArray(event.data)) {
+                lastMsg.progress.stage1 = {
+                  completed: event.data.length,
+                  total: event.data.length,
+                };
+              }
               return { ...prev, messages };
             });
             break;
@@ -149,6 +174,19 @@ function App() {
               const messages = [...prev.messages];
               const lastMsg = messages[messages.length - 1];
               lastMsg.loading.stage2 = true;
+              lastMsg.progress.stage2 = { completed: 0, total: 0 };
+              return { ...prev, messages };
+            });
+            break;
+
+          case 'stage2_progress':
+            setCurrentConversation((prev) => {
+              const messages = [...prev.messages];
+              const lastMsg = messages[messages.length - 1];
+              lastMsg.progress.stage2 = {
+                completed: event.completed,
+                total: event.total,
+              };
               return { ...prev, messages };
             });
             break;
@@ -160,6 +198,13 @@ function App() {
               lastMsg.stage2 = event.data;
               lastMsg.metadata = event.metadata;
               lastMsg.loading.stage2 = false;
+              // Set final progress
+              if (event.data && Array.isArray(event.data)) {
+                lastMsg.progress.stage2 = {
+                  completed: event.data.length,
+                  total: event.data.length,
+                };
+              }
               return { ...prev, messages };
             });
             break;
@@ -169,6 +214,7 @@ function App() {
               const messages = [...prev.messages];
               const lastMsg = messages[messages.length - 1];
               lastMsg.loading.stage3 = true;
+              lastMsg.progress.stage3 = { completed: 0, total: 1 };
               return { ...prev, messages };
             });
             break;
@@ -179,6 +225,7 @@ function App() {
               const lastMsg = messages[messages.length - 1];
               lastMsg.stage3 = event.data;
               lastMsg.loading.stage3 = false;
+              lastMsg.progress.stage3 = { completed: 1, total: 1 };
               return { ...prev, messages };
             });
             break;

@@ -195,14 +195,46 @@ async def send_message_stream(conversation_id: str, request: SendMessageRequest)
             # Stage 1: Collect responses
             logger.debug("Stage 1: Starting response collection")
             yield f"data: {json.dumps({'type': 'stage1_start'})}\n\n"
-            stage1_results = await stage1_collect_responses(request.content)
+            
+            # Create a queue to collect progress events
+            stage1_progress_queue = asyncio.Queue()
+            
+            def stage1_progress_callback(completed, total):
+                # Schedule the put operation - we're in async context so this works
+                asyncio.create_task(stage1_progress_queue.put(('stage1_progress', completed, total)))
+            
+            # Stream progress events while collecting responses
+            stage1_task = asyncio.create_task(stage1_collect_responses(request.content, stage1_progress_callback))
+            while not stage1_task.done():
+                try:
+                    event_type, completed, total = await asyncio.wait_for(stage1_progress_queue.get(), timeout=0.1)
+                    yield f"data: {json.dumps({'type': event_type, 'completed': completed, 'total': total})}\n\n"
+                except asyncio.TimeoutError:
+                    await asyncio.sleep(0.05)
+            
+            stage1_results = await stage1_task
             logger.debug(f"Stage 1: Collected {len(stage1_results)} responses")
             yield f"data: {json.dumps({'type': 'stage1_complete', 'data': stage1_results})}\n\n"
 
             # Stage 2: Collect rankings
             logger.debug("Stage 2: Starting ranking collection")
             yield f"data: {json.dumps({'type': 'stage2_start'})}\n\n"
-            stage2_results, label_to_model = await stage2_collect_rankings(request.content, stage1_results)
+            
+            stage2_progress_queue = asyncio.Queue()
+            
+            def stage2_progress_callback(completed, total):
+                # Schedule the put operation - we're in async context so this works
+                asyncio.create_task(stage2_progress_queue.put(('stage2_progress', completed, total)))
+            
+            stage2_task = asyncio.create_task(stage2_collect_rankings(request.content, stage1_results, stage2_progress_callback))
+            while not stage2_task.done():
+                try:
+                    event_type, completed, total = await asyncio.wait_for(stage2_progress_queue.get(), timeout=0.1)
+                    yield f"data: {json.dumps({'type': event_type, 'completed': completed, 'total': total})}\n\n"
+                except asyncio.TimeoutError:
+                    await asyncio.sleep(0.05)
+            
+            stage2_results, label_to_model = await stage2_task
             aggregate_rankings = calculate_aggregate_rankings(stage2_results, label_to_model)
             logger.debug(f"Stage 2: Collected {len(stage2_results)} rankings")
             yield f"data: {json.dumps({'type': 'stage2_complete', 'data': stage2_results, 'metadata': {'label_to_model': label_to_model, 'aggregate_rankings': aggregate_rankings}})}\n\n"

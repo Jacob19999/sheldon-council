@@ -176,17 +176,19 @@ def main():
             print("  Please stop any existing frontend server manually.")
             sys.exit(1)
     
-    # Determine if uv is available
-    use_uv = False
-    try:
-        subprocess.run(["uv", "--version"], capture_output=True, check=True)
-        use_uv = True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        pass
+    # Determine which Python to use - prioritize venv if it exists
+    venv_python = Path(__file__).parent / ".venv" / "Scripts" / "python.exe" if sys.platform == "win32" else Path(__file__).parent / ".venv" / "bin" / "python"
+    
+    if venv_python.exists():
+        python_cmd = str(venv_python)
+    elif sys.platform == "win32":
+        python_cmd = "python"
+    else:
+        python_cmd = "python3"
     
     # Start backend
     print("Starting backend on http://localhost:8001...")
-    backend_cmd = ["uv", "run", "python", "-m", "backend.main"] if use_uv else ["python", "-m", "backend.main"]
+    backend_cmd = [python_cmd, "-m", "backend.main"]
     
     # Set DEBUG environment variable if debug mode is enabled
     backend_env = os.environ.copy()
