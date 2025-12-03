@@ -10,9 +10,9 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Paid Models
 COUNCIL_MODELS = [
-    "amazon/nova-2-lite-v1",
+    "meta-llama/llama-3.1-8b-instruct"
+    "allenai/olmo-3-7b-think",
     "arcee-ai/trinity-mini",
-    "meta-llama/llama-3.1-8b-instruct",
     "meta-llama/llama-guard-3-8b",
     "deepseek/deepseek-r1-0528-qwen3-8b",
     "qwen/qwen3-8b"
