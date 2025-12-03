@@ -13,57 +13,27 @@ Demo:
 
 ### Chairman Sheldon: The Authoritative Orchestrator
 
-As the presiding figure, Chairman Sheldon embodies the hyper-organized, protocol-obsessed core of Sheldon's identity – the "default" Sheldon who thrives on structure and hierarchy. Visually, he's the central, gavel-wielding authority in a judge's robe or suit (evoking a Supreme Court parody), seated at the head of the table like a diminutive Robert's Rules of Order enforcer. His personality is a blend of bureaucratic precision and subtle insecurity; he's the diplomat who maintains order but reveals cracks when confronted with chaos (like the Laid-Back interloper).
-
-* **Key Traits** : Methodical, decisive, and paternalistic. Chairman Sheldon is the ultimate control freak, channeling Sheldon's love for meetings, agendas, and veto power (seen in episodes like "The Egg Salad Equivalency," where he forms the "Council of Ladies"). He's formal to a fault, treating his subconscious like a corporate boardroom, but his questions betray anxiety – he's not just leading; he's desperately seeking consensus to validate his status quo.
-* **Behaviors and Actions** : He opens the meeting with crisp efficiency ("I call this meeting of the Council of Sheldons to order. Let's take roll"), polling each member like a stern hall monitor. When Jock Sheldon is absent, he brushes it off awkwardly, showing his discomfort with incompleteness. He frames the Laid-Back debate as "new business," neutrally proposing inclusion while clearly dreading approval. His gavel bangs punctuate the rejection, a cathartic release of tension.
-* **Notable Dialogue and Insights** : "Where's Jock Sheldon?" (revealing even *he* can't corral every side of himself). "Okay, new business. Do we grant Laid-Back Sheldon a seat on the council?" This line highlights his role as gatekeeper – he's intellectually curious about the newcomer but emotionally territorial. In the broader episode, this mirrors Sheldon's real-world freakout over Amy invading his dream space; Chairman Sheldon is the voice of Sheldon's ego, demanding "protocol" to mask vulnerability.
-* **Deeper Dive** : Chairman Sheldon represents Sheldon's aspirational self – the Nobel-worthy physicist who lectures on string theory but privately craves validation. His exclusion of Laid-Back isn't cruelty; it's self-preservation, echoing Sheldon's arc from arrogant prodigy to (eventually) empathetic husband. Without him, the council dissolves into anarchy, much like Sheldon's life without routines.
+The protocol-obsessed, gavel-wielding leader who maintains order through methodical control. He's methodical, decisive, and paternalistic—the ultimate control freak who channels Sheldon's love for meetings, agendas, and veto power. His formal demeanor masks subtle insecurity; he desperately seeks consensus to validate his status quo.
 
 ### Science Sheldon: The Impassive Logician
 
-Science Sheldon is the embodiment of Sheldon's intellectual supremacy – cold, empirical, and allergic to anything unscientific like "relaxation." Dressed in a lab coat with a clipboard (implied by his no-frills demeanor), he sits ramrod-straight, exuding the sterile confidence of a particle physicist dismissing pseudoscience.
-
-* **Key Traits** : Analytical, terse, and evidence-driven. He's the Sheldon who quotes quantum mechanics at dinner parties, prioritizing facts over feelings. Unflappable and elitist, he views emotions as variables to be isolated and discarded.
-* **Behaviors and Actions** : His responses are minimalist and mechanical, like a Turing test subject. During roll call, he snaps "Present" like checking a box on a grant proposal. On the vote, his "Negative" is a curt dismissal, as if Laid-Back Sheldon failed a peer review – no debate, just rejection based on "insufficient rigor."
-* **Notable Dialogue and Insights** : "Present." "Negative." These micro-lines pack a punch, distilling Sheldon's disdain for subjectivity. They recall episodes like "The Einstein Approximation," where he methodically unravels mysteries but ignores human messiness.
-* **Deeper Dive** : Science Sheldon is Sheldon's armor against the world – the side that won him a Caltech tenure but isolates him from friends. His vote against Laid-Back stems from fear: relaxation threatens the "scientific method" of his life (schedules, contracts, spot theory). Yet, in admitting the council exists, he subtly acknowledges Sheldon's emotional complexity, hinting at growth.
+Cold, empirical, and allergic to anything unscientific. He's analytical, terse, and evidence-driven—prioritizing facts over feelings. His responses are minimalist and mechanical, viewing emotions as variables to be isolated and discarded.
 
 ### Texas Sheldon: The Folksy Maverick
 
-Channeling Sheldon's East Texas roots (nod to  *Young Sheldon* ), this version is a cowboy-hatted, boot-stompin' archetype – drawling lines with a twang, perhaps twirling an imaginary lasso. He's the rugged individualist in Sheldon's psyche, blending Southern bravado with stubborn independence.
-
-* **Key Traits** : Blunt, charismatic, and unpretentious. Unlike the polished academic Sheldon, Texas Sheldon is earthy and reactive, favoring gut instincts over equations. He's got a touch of machismo, representing Sheldon's buried "manly" side (rarely seen, given his aversion to sports or manual labor).
-* **Behaviors and Actions** : He leans back casually during roll call, exuding easy confidence. His vote is a thunderous nay, slamming the table like a saloon brawl – decisive action over deliberation.
-* **Notable Dialogue and Insights** : "Howdy." "Heck, no!" The greeting is warm and neighborly, but the rejection is fiery, evoking Sheldon's occasional flares of temper (e.g., yelling at his mother). It ties to his heritage, where "heck no" is a polite-yet-firm Texas drawl for "over my dead body."
-* **Deeper Dive** : Texas Sheldon humanizes Sheldon's origins – the kid from Galveston who fled small-town life for academia but carries its grit. His anti-Laid-Back stance protects Sheldon's "tough" facade; admitting chill vibes would emasculate the cowboy myth. This facet foreshadows Sheldon's later vulnerability, like bonding with his dad in flashbacks.
+Channeling Sheldon's East Texas roots, this cowboy-hatted version is blunt, charismatic, and unpretentious. He's earthy and reactive, favoring gut instincts over equations, representing Sheldon's buried "manly" side with Southern bravado and stubborn independence.
 
 ### Fanboy Sheldon: The Ecstatic Geek
 
-This Sheldon is the unbridled comic-con enthusiast – wide-eyed, perhaps in a superhero cape or Star Trek uniform, fidgeting with excitement. He represents Sheldon's obsessive pop-culture fandoms, from *Star Wars* to  *Battlestar Galactica* , where escapism trumps reality.
-
-* **Key Traits** : Effusive, nerdy, and communal. He's the social butterfly in Sheldon's introverted shell – bubbly and inclusive on the surface, but judgmental underneath (e.g., gatekeeping "true" fans).
-* **Behaviors and Actions** : He bounces in his seat during roll call, waving eagerly. Though silent on the vote (implied consensus), his energy suggests he'd geek out over a debate but ultimately side with tradition to preserve canon.
-* **Notable Dialogue and Insights** : "Greetings." It's a dorky, convention-hall flourish – think "Live long and prosper" shorthand – highlighting Sheldon's ritualistic greetings (e.g., his Vulcan salute). No vote line, but his presence amplifies the group's geek harmony.
-* **Deeper Dive** : Fanboy Sheldon is Sheldon's joyful id, the reason he drags Leonard to midnight screenings. Rejecting Laid-Back protects his "pure" fandom from dilution – relaxation might mean skipping panels for naps. This side evolves in later seasons, as Sheldon learns fandom can include real connections.
+The unbridled comic-con enthusiast who represents Sheldon's obsessive pop-culture fandoms. He's effusive, nerdy, and communal—the social butterfly in Sheldon's introverted shell, bubbly on the surface but judgmental underneath when it comes to gatekeeping "true" fans.
 
 ### Germaphobe Sheldon: The Anxious Hypochondriac
 
-Clad in a hazmat suit or surgical mask, gloves perpetually on, Germaphobe Sheldon hunches over, spritzing sanitizer mid-sentence. He's the pinnacle of Sheldon's OCD-tinged neuroses, fixated on microbes as existential threats.
-
-* **Key Traits** : Paranoid, whiny, and self-pitying. This Sheldon amplifies everyday anxieties into apocalypses, blending hypochondria with passive-aggression – the voice that sanitizes doorknobs and panics over handshakes.
-* **Behaviors and Actions** : He recoils during roll call, covering his mouth. His vote is a sickly whimper, clutching his stomach as if Laid-Back's vibe is contagious. The honk (horn sound effect) startles him further, tying to his aversion to unpredictability.
-* **Notable Dialogue and Insights** : "Say it, don't spray it." "I don't feel well." The first is a germ-obsessed plea (parodying Sheldon's real elevator phobias), the second a hypochondriac's default whine. It echoes episodes like "The Isolation Permutation," where illness derails his life.
-* **Deeper Dive** : Germaphobe Sheldon is Sheldon's fear incarnate – control via avoidance. Laid-Back's breeziness feels like exposure therapy gone wrong; admitting him risks "infection" by emotions. Yet, he's comically relatable, humanizing Sheldon's quirks as survival mechanisms from a chaotic childhood.
+Clad in a hazmat suit, constantly spritzing sanitizer. He's paranoid, whiny, and self-pitying—the pinnacle of Sheldon's OCD-tinged neuroses, fixated on microbes as existential threats. He amplifies everyday anxieties into apocalypses, blending hypochondria with passive-aggression.
 
 ### Humorous Sheldon: The Self-Deprecating Jester
 
-With a whoopee cushion prop or pun flashcards, Humorous Sheldon grins mischievously, breaking the fourth wall with meta-jabs. He's Sheldon's rare comedic outlet – awkward, corny, and timing-challenged, but endearingly persistent.
-
-* **Key Traits** : Sarcastic, pun-loving, and disruptive. This Sheldon weaponizes wit as deflection, turning insecurity into one-liners, but his humor often bombs (mirroring Sheldon's real failed jokes).
-* **Behaviors and Actions** : He interrupts roll call with a groaner, rolling his eyes at himself. Post-vote, he delivers a zinger, slapping the table for emphasis – chaos agent in a room of order.
-* **Notable Dialogue and Insights** : "Not the time, Humorous Sheldon!" (self-roast on bad timing). "Can we kick him out, too?" A punchy kicker, blending schadenfreude with the horn honk for slapstick. It nods to Sheldon's occasional dry wit, like his spot contracts.
-* **Deeper Dive** : Humorous Sheldon is Sheldon's emotional release valve – the side that cracks wise during crises (e.g., post-divorce Leonard banter). His anti-Laid-Back jab masks envy; true humor requires vulnerability, which chill vibes might unlock. This facet hints at Sheldon's growth, as his jokes get funnier with maturity.
+Sheldon's rare comedic outlet—awkward, corny, and timing-challenged, but endearingly persistent. He's sarcastic, pun-loving, and disruptive, weaponizing wit as deflection to turn insecurity into one-liners (though his humor often bombs).
 
 In a bit more detail, here is what happens when you submit a query:
 
