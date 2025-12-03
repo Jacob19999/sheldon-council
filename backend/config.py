@@ -8,6 +8,18 @@ load_dotenv()
 # OpenRouter API key
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
+# Paid Models
+COUNCIL_MODELS = [
+    "amazon/nova-2-lite-v1",
+    "arcee-ai/trinity-mini",
+    "meta-llama/llama-3.1-8b-instruct",
+    "meta-llama/llama-guard-3-8b",
+    "deepseek/deepseek-r1-0528-qwen3-8b",
+    "qwen/qwen3-8b"
+]
+
+
+'''
 # Council members - list of OpenRouter model identifiers (free models)
 COUNCIL_MODELS = [
     "tngtech/deepseek-r1t2-chimera:free",
@@ -17,9 +29,10 @@ COUNCIL_MODELS = [
     "openai/gpt-oss-20b:free",
     "nvidia/nemotron-nano-9b-v2:free"
 ]
+'''
 
 # Chairman model - synthesizes final response (using a free model)
-CHAIRMAN_MODEL = "x-ai/grok-4.1-fast:free"
+CHAIRMAN_MODEL = "google/gemini-2.5-flash"
 
 # OpenRouter API endpoint
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
